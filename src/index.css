@@ -104,6 +104,7 @@ li {
 .row {
     display: flex;
     justify-content: space-around;
+    column-gap: 16px;
 }
 
 .column {

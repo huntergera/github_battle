@@ -3,7 +3,7 @@ import {Link} from "react-router-dom";
 
 export const Home = () => {
     return (
-        <div>
+        <div className='home-container'>
             <h1>Welcome to GitHub Battle</h1>
             <div className="row">
                 <Link className='button' to='/battle'>Battle</Link>
