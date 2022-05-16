@@ -2,13 +2,15 @@ import React from "react";
 import {SelectedLanguages} from "./SelectedLanguages";
 import {fetchPopularRepos} from "../utils/api";
 import {Repos} from "./Repos";
+import {Spinner} from "./shared/Spinner";
 
 class Popular extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
             selectedLanguage: 'All',
-            repos: null
+            repos: null,
+            error: null
         }
         this.selectLanguage = this.selectLanguage.bind(this);
     }
@@ -20,22 +22,28 @@ class Popular extends React.Component {
     fetchHandler(language) {
         fetchPopularRepos(language)
             .then(data => this.setState({repos: data}))
-            .catch(error => console.error(error))
+            .catch(error => this.setState({error: error.message}))
     }
 
     selectLanguage(language) {
-        this.setState({selectedLanguage: language});
-        this.fetchHandler(language);
+        if(language !== this.state.selectedLanguage) {
+            this.setState({selectedLanguage: language, repos: null});
+            this.fetchHandler(language);
+        }
     }
 
     render() {
+        if(this.state.error) {
+            return <p>{this.state.error}</p>;
+        }
+
         return (
             <div>
                 <SelectedLanguages
                     selectedLanguage={this.state.selectedLanguage}
-                    selectLanguageHandler={this.selectLanguage}
+                    selectLanguageHandler={this.state.repos ? this.selectLanguage : null}
                 />
-                {this.state.repos ? <Repos repos={this.state.repos} /> : null}
+                {this.state.repos ? <Repos repos={this.state.repos} /> : <Spinner height="100" width="100" color="#ffe07d"/>}
             </div>
         )
     }
