@@ -1,8 +1,8 @@
 import React from "react";
 import {SelectedLanguages} from "./SelectedLanguages";
-import {fetchPopularRepos} from "../utils/api";
+import {fetchPopularRepos} from "../../utils/api";
 import {Repos} from "./Repos";
-import {Spinner} from "./shared/Spinner";
+import {Spinner} from "../shared/Spinner";
 
 class Popular extends React.Component {
     constructor(props) {

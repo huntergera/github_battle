@@ -1,10 +1,10 @@
 import React from "react";
 import {BrowserRouter as Router, Route, Switch} from "react-router-dom";
 import {Nav} from "./Nav";
-import Popular from "./Popular";
-import Battle from "./Battle";
-import {Home} from "./Home";
-import Results from "./Results";
+import Popular from "./Popular/Popular";
+import Battle from "./Battle/Battle";
+import {Home} from "./Home/Home";
+import Results from "./Battle/Results";
 
 export const App = () => {
     return (
