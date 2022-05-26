@@ -2,12 +2,15 @@ import React, {useEffect, useState, Fragment} from "react";
 import {Player} from "./Player";
 import {battle} from "../../utils/api";
 import {Spinner} from "../shared/Spinner";
+import {useDispatch, useSelector} from "react-redux";
+import {setError, setLoading, setLoser, setWinner} from "../../redux/actions/results.actions";
 
 const Results = (props) => {
-    const [loading, setLoading] = useState(true);
-    const [winner, setWinner] = useState(null);
-    const [loser, setLoser] = useState(null);
-    const [error, setError] = useState(null);
+    const winnerFromState = useSelector(state => state.resultsReducer.winner);
+    const looserFromState = useSelector(state => state.resultsReducer.loser);
+    const loadingFromState = useSelector(state => state.resultsReducer.loading);
+    const errorFromState = useSelector(state => state.resultsReducer.error);
+    const dispatch = useDispatch();
 
     useEffect(() => {
         const searchParams = new URLSearchParams(props.location.search);
@@ -17,39 +20,39 @@ const Results = (props) => {
         battle([playerOneName, playerTwoName])
             .then(([winner, loser]) => {
                 if(winner && loser) {
-                    setWinner(winner);
-                    setLoser(loser);
+                    dispatch(setWinner(winner));
+                    dispatch(setLoser(loser));
                 } else {
-                    setError('Looks like this is an error. Check both users!');
+                    dispatch(setError('Looks like this is an error. Check both users!'));
                 }
             })
             .finally(() => {
-                setLoading(false);
+                dispatch(setLoading(false));
             })
 
     }, []);
 
-    if(error) {
-        return <h3>{error.message}</h3>
+    if(errorFromState) {
+        return <h3>{errorFromState.message}</h3>
     }
 
-    if(loading) {
+    if(loadingFromState) {
         return <Spinner height="100" width="100" color="#ffe07d"/>
     }
 
     return (
         <div className='row'>
-            {winner && loser &&
+            {winnerFromState && looserFromState &&
                 <Fragment>
                     <Player
                         label='Winner'
-                        score={winner.score}
-                        profile={winner.profile}
+                        score={winnerFromState.score}
+                        profile={winnerFromState.profile}
                     />
                     <Player
                         label='Loser'
-                        score={loser.score}
-                        profile={loser.profile}
+                        score={looserFromState.score}
+                        profile={looserFromState.profile}
                     />
                 </Fragment>
             }

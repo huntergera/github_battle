@@ -1,6 +1,8 @@
-import React, {memo} from "react";
+import React from "react";
+import {useSelector} from "react-redux";
 
-export const SelectedLanguages = memo(({selectedLanguage, selectLanguageHandler}) => {
+export const SelectedLanguages =({selectLanguageHandler}) => {
+    const selectedLanguage = useSelector(state => state.popularReducer.selectedLanguage);
     const languages = ['All', 'Javascript', 'Ruby', 'Java', 'CSS', 'Python'];
 
     return (
@@ -15,4 +17,4 @@ export const SelectedLanguages = memo(({selectedLanguage, selectLanguageHandler}
             ))}
         </ul>
     )
-})
+}

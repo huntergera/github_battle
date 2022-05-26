@@ -1,52 +1,49 @@
 import React from "react";
+import {connect} from "react-redux";
 import {SelectedLanguages} from "./SelectedLanguages";
-import {fetchPopularRepos} from "../../utils/api";
 import {Repos} from "./Repos";
-import {Spinner} from "../shared/Spinner";
+import {setSelectedLanguage } from "../../redux/actions/popular.actions";
+import {fetchPopularReposThunk} from "../../redux/thunk/popular.thunk";
+
+const mapStateToProps = ({popularReducer}) => ({
+    selectedLanguage: popularReducer.selectedLanguage,
+    repos: popularReducer.repos,
+    error: popularReducer.error,
+})
 
 class Popular extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {
-            selectedLanguage: 'All',
-            repos: null,
-            error: null
-        }
         this.selectLanguage = this.selectLanguage.bind(this);
     }
 
     componentDidMount() {
-        this.fetchHandler(this.state.selectedLanguage);
+        this.fetchHandler(this.props.selectedLanguage);
     }
 
     fetchHandler(language) {
-        fetchPopularRepos(language)
-            .then(data => this.setState({repos: data}))
-            .catch(error => this.setState({error: error.message}))
+        this.props.dispatch(fetchPopularReposThunk(language));
     }
 
     selectLanguage(language) {
-        if(language !== this.state.selectedLanguage) {
-            this.setState({selectedLanguage: language, repos: null});
+        if(language !== this.props.selectedLanguage) {
+            this.props.dispatch(setSelectedLanguage(language));
             this.fetchHandler(language);
         }
     }
 
     render() {
-        if(this.state.error) {
-            return <p>{this.state.error}</p>;
+        if(this.props.error) {
+            return <p>{this.props.error}</p>;
         }
 
         return (
             <div>
-                <SelectedLanguages
-                    selectedLanguage={this.state.selectedLanguage}
-                    selectLanguageHandler={this.state.repos ? this.selectLanguage : null}
-                />
-                {this.state.repos ? <Repos repos={this.state.repos} /> : <Spinner height="100" width="100" color="#ffe07d"/>}
+                <SelectedLanguages selectLanguageHandler={this.selectLanguage}/>
+                <Repos />
             </div>
         )
     }
 }
 
-export default Popular;
+export default connect(mapStateToProps)(Popular);

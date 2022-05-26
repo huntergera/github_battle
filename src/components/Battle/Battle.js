@@ -1,51 +1,64 @@
 import React from "react";
+import {connect} from "react-redux";
 import {Link} from "react-router-dom";
 import PlayerInput from "./PlayerInput";
 import PlayerPreview from "./PlayerPreview";
+import {
+    setPlayerOneImage,
+    setPlayerOneName,
+    setPlayerTwoImage,
+    setPlayerTwoName
+} from "../../redux/actions/battle.actions";
+
+const mapStateToProps = ({battleReducer}) => ({
+    playerOneName: battleReducer.playerOneName,
+    playerTwoName: battleReducer.playerTwoName,
+    playerOneImage: battleReducer.playerOneImage,
+    playerTwoImage: battleReducer.playerTwoImage
+})
 
 class Battle extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {
-            playerOneName: '',
-            playerTwoName: '',
-            playerOneImage: null,
-            playerTwoImage: null
-        }
 
         this.handleSubmit = this.handleSubmit.bind(this);
     }
 
     handleSubmit(id, username) {
-        this.setState({
-            [id + 'Name']: username,
-            [id + 'Image']: `https://github.com/${username}.png?size200`
-        })
+        if (id === 'playerOne') {
+            this.props.dispatch(setPlayerOneName(username));
+            this.props.dispatch(setPlayerOneImage(`https://github.com/${username}.png?size200`));
+        } else if (id === 'playerTwo') {
+            this.props.dispatch(setPlayerTwoName(username));
+            this.props.dispatch(setPlayerTwoImage(`https://github.com/${username}.png?size200`));
+        }
     }
 
     handleReset(id) {
-        this.setState({
-            [id + 'Name']: '',
-            [id + 'Image']: null
-        })
+        if (id === 'playerOne') {
+            this.props.dispatch(setPlayerOneName(''));
+            this.props.dispatch(setPlayerOneImage(null));
+        } else if (id === 'playerTwo') {
+            this.props.dispatch(setPlayerTwoName(''));
+            this.props.dispatch(setPlayerTwoImage(null));
+        }
     }
 
     render() {
-        const {playerOneName, playerTwoName, playerOneImage, playerTwoImage} = this.state;
         const {match} = this.props;
 
         return (
             <div>
                 <div className='row'>
-                    {!playerOneName ?
+                    {!this.props.playerOneName ?
                         <PlayerInput
                             id='playerOne'
                             label='Player One'
                             onSubmit={this.handleSubmit}
                         /> :
                         <PlayerPreview
-                            username={playerOneName}
-                            avatar={playerOneImage}
+                            username={this.props.playerOneName}
+                            avatar={this.props.playerOneImage}
                         >
                             <button
                                 className='reset'
@@ -54,15 +67,15 @@ class Battle extends React.Component {
                             </button>
                         </PlayerPreview>
                     }
-                    {!playerTwoName ?
+                    {!this.props.playerTwoName ?
                         <PlayerInput
                             id='playerTwo'
                             label='Player Two'
                             onSubmit={this.handleSubmit}
                         /> :
                         <PlayerPreview
-                            username={playerTwoName}
-                            avatar={playerTwoImage}
+                            username={this.props.playerTwoName}
+                            avatar={this.props.playerTwoImage}
                         >
                             <button
                                 className='reset'
@@ -72,10 +85,10 @@ class Battle extends React.Component {
                         </PlayerPreview>
                     }
                 </div>
-                {playerOneImage && playerTwoImage &&
+                {this.props.playerOneImage && this.props.playerTwoImage &&
                     <Link className='button' to={{
                         pathname: `${match.url}/results`,
-                        search: `?playerOneName=${playerOneName}&playerTwoName=${playerTwoName}`
+                        search: `?playerOneName=${this.props.playerOneName}&playerTwoName=${this.props.playerTwoName}`
                     }}>
                         Battle
                     </Link>
@@ -85,4 +98,4 @@ class Battle extends React.Component {
     }
 }
 
-export default Battle;
+export default connect(mapStateToProps)(Battle);
